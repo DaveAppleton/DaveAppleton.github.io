@@ -1,0 +1,266 @@
+<HTML>
+
+    <head>
+        <title>Lupine Memory Device</title>
+        <script src="inc/web3.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="inc/bootstrap.min.css">
+        <script src="inc/jquery.min.js"></script>
+        <script src="inc/bootstrap.min.js"></script>
+        <script>
+            function start() {
+    
+                // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+                if (typeof web3 !== 'undefined') {
+                    // Use Mist/MetaMask's provider
+                    web3js = new Web3(web3.currentProvider);
+                    return true;
+                } else {
+                    web3 = new Web3();
+                    //web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
+                    web3.setProvider(new web3.providers.HttpProvider('https://rinkeby.infura.io/Jt0sW1Y9QOVpoh2lDKCQ'));
+                    return true;
+                }
+            }
+    
+            start()
+            function correctNetwork() {
+                web3.version.getNetwork((err, netId) => {
+                    switch (netId) {
+                        case "1":
+                            $("#answer").val('** DO NOT USE **\nThis is mainnet')
+                            break;
+                        case "2":
+                            $("#answer").val('** DO NOT USE **\nThis is the deprecated Morden test network.')
+                            break;
+                        case "3":
+                            $("#answer").val('** DO NOT USE **\nThis is the ropsten test network.')
+                            break;
+                        case "4":
+                            $("#answer").val('This is the Rinkeby test network.\n Please proceed.')
+                            break
+                        case "42":
+                            $("#answer").val('** DO NOT USE **\nThis is the Kovan test network.')
+                            break;
+                        default:
+                            $("#answer").val('** DO NOT USE **\nThis is an unknown network.')
+                            break;
+                    }
+                })
+            };
+    
+            var HGTaddress = '0xf6ac3ece51d3fdd9b3e2056f270bee5d167096ea';
+            var GOLDXaddress = '0xba03703ecf2278684822b50d753f6060e59ccf0e';
+            var exchangeAddress = '0x3189b3d2338a0619a75e9145356d989362c75c5b';
+            var HGTabi = `[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "whom",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+]`;
+
+            var exchangeABI = `[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "buyGold",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	}
+]`;
+            let hgt = web3.eth.contract(JSON.parse(HGTabi)).at(HGTaddress);
+            let goldx = web3.eth.contract(JSON.parse(HGTabi)).at(GOLDXaddress);
+            let exchg = web3.eth.contract(JSON.parse(exchangeABI)).at(exchangeAddress);
+        
+            function buyGold() {
+                amountOfHGT = $("#hgt").val()*100000000;
+                amountOfEther = $("#send").val();
+                console.log(amountOfHGT, amountOfEther);
+
+                hgt.approve(GOLDXaddress,amountOfHGT , (err, result) => {
+    
+                exchg.buyGold(amountOfHGT, { value: web3.toWei(amountOfEther) }, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
+                    console.log("done");
+                });
+                
+                
+            }
+    
+    
+            function getReceipt(txHash) {
+                comment();
+                var jqxhr = jQuery.getJSON("/checkTx", { "hash": txHash }, function (data) {
+                    getAnswer(data.Src, data.Nonce, data.LastBlock);
+                })
+                    .done(function () {
+                        console.log("success");
+                    })
+                    .fail(function () {
+                        if (jqxhr.status == 418) {
+                            window.setTimeout(getReceipt(txHash), 90000);
+                        } else {
+                            $("#answer").val("Very sorry - something went horribly wrong")
+                        }
+                    })
+    
+            }
+    
+            function getAnswer(src, nonce, blk) {
+                comment();
+                var jqxhr = jQuery.getJSON("/checkAnswer", { "address": src, "nonce": nonce, "block": blk }, function (data) {
+                    console.log(data);
+                    $("#answer").val(data);
+                    $('#askButton').prop('disabled', false);
+                    $('#askButtonCode').prop('disabled', false);
+                })
+                    .done(function () {
+                        console.log("success");
+                    })
+                    .fail(function () {
+                        if (jqxhr.status == 418) {
+                            window.setTimeout(getAnswer(src, nonce, blk), 90000);
+                        } else {
+                            $("#answer").val("Very sorry - something went horribly wrong")
+                        }
+                    })
+    
+            }
+    
+            
+    
+        </script>
+    </head>
+    
+    <body>
+        <br/>
+        <br/>
+        <div class="container">
+            <hr>
+    
+            <div class="col-md-6 col-md-offset-4">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1>goldXchange</h1>
+    
+    
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>account</label>
+                            <input class="form-control" name="account" id="account" width=50 readonly></input>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label>balance</label>
+                        <input class="form-control" name="balance" id="balance" width=20 readonly></input>
+                    </div>
+                </div>
+                <div class="row">
+                    <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm" alt="Metamask" style="display:none;">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>hgt</label>
+                            <input class="form-control" name="hgt" id="hgt" width=50 readonly></input>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>use</label>
+                        <input class="form-control" name="use" id="use" width=20 ></input>                            
+                    </div>
+                </div>
+    
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>send</label>
+                            <input class="form-control" name="send" id="send" width=50></input>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>BUY</label>
+                        <button id="askButtonCode" class="btn btn-primary" type="button" onclick="javascript:buyGold();">Buy GOLDX
+
+                        </button>
+                    </div>
+                </div>
+
+                
+                <div class="row">
+                    <label>Answer</label>
+                    <textarea class="form-control" rows="5" name=answer id="answer" readonly></textarea>
+                    <!--input class="form-control" style="height:70px" name=answer id="answer" readonly></input-->
+                </div>
+    
+            </div>
+    
+        </div>
+    </body>
+    <script>
+        
+       
+        let e = window.web3.eth.defaultAccount;
+        console.log(e);
+        $("#account").val(e);
+        window.web3.eth.getBalance(e, function (error, result) {
+            if (!error) {
+                web3.wei
+                $("#balance").val(web3.fromWei(result));
+            };
+        });
+        hgt.balanceOf(e, function(error,result) {
+            if (!error) {
+                $("#hgt").val(result.toString()/10e10);
+            }
+        }
+        );
+        correctNetwork();
+    </script>
+    
+    </html>
