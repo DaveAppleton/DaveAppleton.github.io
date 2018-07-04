@@ -117,7 +117,7 @@
                 amountOfEther = $("#send").val();
                 console.log(amountOfHGT, amountOfEther);
 
-                hgt.approve(GOLDXaddress,amountOfHGT , (err, result) => {
+                hgt.approve(exchangeAddress,amountOfHGT , (err, result) => {
     
                 exchg.buyGold(amountOfHGT, { value: web3.toWei(amountOfEther) }, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
                     console.log("done");
