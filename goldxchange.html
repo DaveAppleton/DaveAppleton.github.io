@@ -113,7 +113,7 @@
             let exchg = web3.eth.contract(JSON.parse(exchangeABI)).at(exchangeAddress);
         
             function buyGold() {
-                amountOfHGT = $("#hgt").val()*100000000;
+                amountOfHGT = $("#use").val()*100000000;
                 amountOfEther = $("#send").val();
                 console.log(amountOfHGT, amountOfEther);
 
