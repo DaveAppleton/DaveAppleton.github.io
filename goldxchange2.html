@@ -120,8 +120,7 @@
                 
                 console.log(amountOfGOLDX);
 
-                goldx.approve(exchangeAddress,amountOfGOLDX , (err, result) => {
-    
+                goldx.approve(exchangeAddress,amountOfGOLDX , (err, result) => {    
                     exchg.buyGold(amountOfGOLDX, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
                     console.log("done");
                 });
@@ -257,9 +256,9 @@
                 $("#balance").val(web3.fromWei(result));
             };
         });
-        hgt.balanceOf(e, function(error,result) {
+        goldx.balanceOf(e, function(error,result) {
             if (!error) {
-                $("#hgt").val(result.toString()/1e8);
+                $("#goldx").val(web3.fromWei(result));
             }
         }
         );
