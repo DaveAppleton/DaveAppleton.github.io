@@ -100,14 +100,14 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "tokens",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "buyGold",
+		"name": "sellGold",
 		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]`;
@@ -115,14 +115,14 @@
             let goldx = web3.eth.contract(JSON.parse(HGTabi)).at(GOLDXaddress);
             let exchg = web3.eth.contract(JSON.parse(exchangeABI)).at(exchangeAddress);
         
-            function buyGold() {
-                amountOfHGT = $("#use").val()*100000000;
-                amountOfEther = $("#send").val();
-                console.log(amountOfHGT, amountOfEther);
+            function sellGold() {
+                amountOfGOLDX = web3.toWei(("#sell_goldx").val());
+                
+                console.log(amountOfGOLDX);
 
-                hgt.approve(exchangeAddress,amountOfHGT , (err, result) => {
+                goldx.approve(exchangeAddress,amountOfGOLDX , (err, result) => {
     
-                exchg.buyGold(amountOfHGT, { value: web3.toWei(amountOfEther) }, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
+                    exchg.buyGold(amountOfGOLDX, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
                     console.log("done");
                 });
                 
