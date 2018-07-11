@@ -121,7 +121,7 @@
                 console.log(amountOfGOLDX);
 
                 goldx.approve(exchangeAddress,amountOfGOLDX , (err, result) => {    
-                    exchg.buyGold(amountOfGOLDX, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
+                    exchg.sellGold(amountOfGOLDX, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
                     console.log("done");
                 });
                 
@@ -182,7 +182,9 @@
             <div class="col-md-6 col-md-offset-4">
                 <div class="row">
                     <div class="col-xs-12">
-                        <h1>goldXchange</h1>
+                        <h1>goldXchange SELL GOLD</h1>
+                        <p>She sells sea shells on the seashore</p>
+                        <p>How many esses in that?</p>
     
     
                     </div>
@@ -227,7 +229,7 @@
 
                     <div class="col-md-3">
                         <label>SELL</label>
-                        <button id="askButtonCode" class="btn btn-primary" type="button" onclick="javascript:buyGold();">Sell GOLDX
+                        <button id="askButtonCode" class="btn btn-primary" type="button" onclick="javascript:sellGold();">Sell GOLDX
 
                         </button>
                     </div>
