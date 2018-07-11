@@ -116,7 +116,7 @@
             let exchg = web3.eth.contract(JSON.parse(exchangeABI)).at(exchangeAddress);
         
             function sellGold() {
-                amountOfGOLDX = web3.toWei(("#sell_goldx").val());
+                amountOfGOLDX = web3.toWei($("#sell_goldx").val());
                 
                 console.log(amountOfGOLDX);
 
