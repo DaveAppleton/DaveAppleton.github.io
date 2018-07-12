@@ -18,7 +18,7 @@
                 } else {
                     web3 = new Web3();
                     //web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
-                    web3.setProvider(new web3.providers.HttpProvider('https://rinkeby.infura.io/Jt0sW1Y9QOVpoh2lDKCQ'));
+                    web3.setProvider(new web3.providers.HttpProvider('https://kovan.infura.io/daveappleton'));
                     return true;
                 }
             }
@@ -36,11 +36,11 @@
                         case "3":
                             $("#answer").val('** DO NOT USE **\nThis is the ropsten test network.')
                             break;
-                        case "4":
-                            $("#answer").val('This is the Rinkeby test network.\n Please proceed.')
+                            case "4":
+                            $("#answer").val('** DO NOT USE **\nThis is the Rinkeby test network.')
                             break
                         case "42":
-                            $("#answer").val('** DO NOT USE **\nThis is the Kovan test network.')
+                            $("#answer").val('This is the Kovan test network.\n Please proceed.')
                             break;
                         default:
                             $("#answer").val('** DO NOT USE **\nThis is an unknown network.')
@@ -49,9 +49,9 @@
                 })
             };
     
-            var HGTaddress = '0xf6ac3ece51d3fdd9b3e2056f270bee5d167096ea';
-            var GOLDXaddress = '0xba03703ecf2278684822b50d753f6060e59ccf0e';
-            var exchangeAddress = '0x3189b3d2338a0619a75e9145356d989362c75c5b';
+            var HGTaddress = '0xe00f6f5bbed55e1065aabfea3ff5ea8f12ee0497';
+            var GOLDXaddress = '0x2f27bd58ab2946f3c351ee0161cc2ba52e3ddd40';
+            var exchangeAddress = '0x770ea864354197b5b15416c1df325516ed855a4c';
             var HGTabi = `[
 	{
 		"constant": false,
