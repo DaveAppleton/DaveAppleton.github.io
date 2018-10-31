@@ -56,6 +56,7 @@
       web3.version.getNetwork((err, netId) => {
           switch (netId) {
               case "1":
+                $("#answer").val('main network.')
                   return true
               case "2":
                   $("#answer").val('** DO NOT USE **\nThis is the deprecated Morden test network.')
@@ -125,9 +126,8 @@ function rehash() {
 }
 
 function buy() {
-  if (!correctNetwork()) {
-    return;
-  }
+  correctNetwork();
+    
   name = $("#your_name").val();
   console.log(name);
   ether = web3.toWei($("#ether").val(),"ether");
@@ -222,6 +222,6 @@ window.web3.eth.getBalance(e, function (error, result) {
     };
 });
 
-correctNetwork();
+//correctNetwork();
 </script>
 </HTML>
