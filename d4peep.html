@@ -45,11 +45,9 @@
             try {
                 // Request account access if needed
                 await ethereum.enable();
-                // Acccounts now exposed
-                web3.eth.sendTransaction({/* ... */});
             } catch (error) {
-		console.log("Access not given");
-		return;
+                console.log("Access not given");
+                return;
                 // User denied account access...
             }
         }
