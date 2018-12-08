@@ -175,6 +175,7 @@ PeepTaddress = "0x5D58398589de1a119117a5271EA8f75Db192fcD3";
 let peepT = web3.eth.contract(JSON.parse(PeepTABI)).at(PeepTaddress);
 
 function buy() {
+    console.log("tapping in")
   correctNetwork();
   let d = new Date()
   let ds = d.toString();
