@@ -98,17 +98,44 @@
 
   var PeepTABI = `[
 	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"name": "sig",
+				"type": "bytes"
+			}
+		],
+		"name": "recoverSig",
+		"outputs": [
+			{
+				"name": "addr",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
-				"name": "data",
-				"type": "bytes32"
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"name": "sig",
+				"type": "bytes"
 			}
 		],
-		"name": "buyCard",
+		"name": "helperVisit",
 		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -116,25 +143,35 @@
 		"inputs": [
 			{
 				"indexed": false,
-				"name": "buyer",
+				"name": "helper",
 				"type": "address"
 			},
 			{
 				"indexed": false,
-				"name": "cardnumber",
-				"type": "uint256"
+				"name": "whoWasVisited",
+				"type": "address"
 			},
 			{
 				"indexed": false,
-				"name": "data",
-				"type": "bytes32"
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "date",
+				"type": "uint256"
 			}
 		],
-		"name": "CardPurchased",
+		"name": "LogHelperVisit",
 		"type": "event"
 	}
-]`
-PeepTaddress = "0xA4FD99a29b331d16305a1FF88fBfDfD30bA2A5d2";
+]
+`
+
+var dollPK = '42fd81641935c51fbe6accbcdf430ece96ffca9f27e7467f38431815c2568dbe'
+var dollAddr = '0xd01122f11B44bcfe662F788D2fcf59a5e21BA90a'
+
+PeepTaddress = "0x5D58398589de1a119117a5271EA8f75Db192fcD3";
 let peepT = web3.eth.contract(JSON.parse(PeepTABI)).at(PeepTaddress);
 
 function rehash() {
@@ -145,14 +182,14 @@ function rehash() {
 
 function buy() {
   correctNetwork();
-    
-  name = $("#your_name").val();
-  console.log(name);
-  ether = web3.toWei($("#ether").val(),"ether");
-  console.log(ether);
-  k256 = keccak256(name);
+  let d = new Date()
+  let ds = d.toString();
+ 
+  console.log(ds);
+  k256 = keccak256(ds);
   console.log(k256)
-  peepT.buyCard(k256, { value: ether, gas : 60000 }, function(error,result) {
+  let sig = web3.eth.sign(k256, dollPK);
+  peepT.helperVisit(ds,sig, { value: ether, gas : 60000 }, function(error,result) {
         if (!error) {
             $("#answer").val("OK");
         }
