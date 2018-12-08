@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="inc/bootstrap.min.css">
   <script src="inc/jquery.min.js"></script>
   <script src="inc/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
   <script>
 
     function leftPad(str, target, pad) {
@@ -66,12 +67,6 @@
         let e = window.web3.eth.defaultAccount;
         console.log(e);
         $("#account").val("ANDY");
-        window.web3.eth.getBalance(e, function (error, result) {
-            if (!error) {
-                web3.wei
-                $("#balance").val(web3.fromWei(result));
-            };
-        });
     });
 
 
@@ -187,6 +182,7 @@ function buy() {
                 </div>
             </div>
             <div class="col-md-3">
+                    <i class="far fa-address-card"></i>
                 <label>balance</label>
                 <input class="form-control" name="balance" id="balance" width=20 readonly></input>
             </div>
