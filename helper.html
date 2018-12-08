@@ -1,0 +1,234 @@
+<HTML>
+
+<head>
+  <title>Newent Helper Service</title>
+  <script src="inc/web3.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="inc/bootstrap.min.css">
+  <script src="inc/jquery.min.js"></script>
+  <script src="inc/bootstrap.min.js"></script>
+  <script>
+
+    function leftPad(str, target, pad) {
+      while (str.length < target) {
+        str = pad + str
+      }
+      return str
+    }
+    function keccak256(...args) {
+      args = args.map(arg => {
+        if (typeof arg === 'string') {
+          if (arg.substring(0, 2) === '0x') {
+              return arg.slice(2)
+          } else {
+              return web3.toHex(arg).slice(2)
+          }
+        }
+
+        if (typeof arg === 'number') {
+          return leftPad((arg).toString(16), 4, 0) // customised to make index a uint64
+        } else {
+          return ''
+        }
+      })
+
+      args = args.join('')
+      console.log(args)
+      return web3.sha3(args, { encoding: 'hex' })
+    }
+
+    window.addEventListener('load', async () => {
+        console.log("xxx");
+        $("#account").val("ANDY");
+        // Modern dapp browsers...
+        if (window.ethereum) {
+            window.web3 = new Web3(ethereum);
+            try {
+                // Request account access if needed
+                await ethereum.enable();
+            } catch (error) {
+                console.log("Access not given");
+                return;
+                // User denied account access...
+            }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+            window.web3 = new Web3(web3.currentProvider);
+            // Acccounts always exposed
+            
+        }
+        // Non-dapp browsers...
+        else {
+            console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+            return
+        }
+        let e = window.web3.eth.defaultAccount;
+        console.log(e);
+        $("#account").val("ANDY");
+        window.web3.eth.getBalance(e, function (error, result) {
+            if (!error) {
+                web3.wei
+                $("#balance").val(web3.fromWei(result));
+            };
+        });
+    });
+
+
+  function correctNetwork() {
+      web3.version.getNetwork((err, netId) => {
+          switch (netId) {
+              case "1":
+                $("#answer").val('main network.')
+                  return true
+              case "2":
+                  $("#answer").val('** DO NOT USE **\nThis is the deprecated Morden test network.')
+                  break;
+              case "3":
+                  $("#answer").val('** DO NOT USE **\nThis is the ropsten test network.')
+                  break;
+              case "4":
+                  $("#answer").val('** DO NOT USE **\nThis is the Rinkeby test network.')
+                  break
+              case "42":
+                  $("#answer").val('** DO NOT USE **\nThis is the Kovan test network.')
+                  break;
+              default:
+                  $("#answer").val('** DO NOT USE **\nThis is an unknown network.')
+                  break;
+          }
+      })
+      return false
+  };
+
+  var PeepTABI = `[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "data",
+				"type": "bytes32"
+			}
+		],
+		"name": "buyCard",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "buyer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "cardnumber",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "data",
+				"type": "bytes32"
+			}
+		],
+		"name": "CardPurchased",
+		"type": "event"
+	}
+]`
+PeepTaddress = "0xA4FD99a29b331d16305a1FF88fBfDfD30bA2A5d2";
+let peepT = web3.eth.contract(JSON.parse(PeepTABI)).at(PeepTaddress);
+
+function rehash() {
+  name = $("#your_name").val()
+  k256 = keccak256(name);
+  console.log(k256);
+}
+
+function buy() {
+  correctNetwork();
+    
+  name = $("#your_name").val();
+  console.log(name);
+  ether = web3.toWei($("#ether").val(),"ether");
+  console.log(ether);
+  k256 = keccak256(name);
+  console.log(k256)
+  peepT.buyCard(k256, { value: ether, gas : 60000 }, function(error,result) {
+        if (!error) {
+            $("#answer").val("OK");
+        }
+    });
+  }
+  </script>
+  
+</head>
+<body>
+    
+<br/>
+<br/>
+<div class="container">
+    <hr>
+
+    <div class="col-md-6 col-md-offset-4">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Newent Helper Service</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Your Helper</label>
+                    <input class="form-control" name="account" id="account" width=50 readonly></input>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label>balance</label>
+                <input class="form-control" name="balance" id="balance" width=20 readonly></input>
+            </div>
+        </div>
+        <div class="row">
+            <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm" alt="Metamask" style="display:none;">
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Your Name (will be hashed)</label>
+                    <input class="form-control" name="your_name" id="your_name" width=50 onchange="javascript:rehash()"></input>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Ether to send (min 1 eth)</label>
+                    <input class="form-control" name="ether" id="ether" width=50></input>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label></label>
+                <button id="askButtonCode" class="btn btn-primary" type="button" onclick="javascript:buy();">PAY
+
+                </button>
+            </div>
+        </div>
+
+        
+        <div class="row">
+            <label>Answer</label>
+            <textarea class="form-control" rows="5" name=answer id="answer" readonly></textarea>
+            <!--input class="form-control" style="height:70px" name=answer id="answer" readonly></input-->
+        </div>
+
+    </div>
+
+</div>
+</body>
+</HTML>
