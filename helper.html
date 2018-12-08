@@ -74,8 +74,8 @@
       web3.version.getNetwork((err, netId) => {
           switch (netId) {
               case "1":
-                $("#answer").val('main network.')
-                  return true
+                $("#answer").val('*** DO NOT USE **\nmain network.')
+                  break
               case "2":
                   $("#answer").val('** DO NOT USE **\nThis is the deprecated Morden test network.')
                   break;
@@ -86,8 +86,8 @@
                   $("#answer").val('** DO NOT USE **\nThis is the Rinkeby test network.')
                   break
               case "42":
-                  $("#answer").val('** DO NOT USE **\nThis is the Kovan test network.')
-                  break;
+                  $("#answer").val('This is the Kovan test network.')
+                  return true
               default:
                   $("#answer").val('** DO NOT USE **\nThis is an unknown network.')
                   break;
@@ -174,24 +174,18 @@ var dollAddr = '0xd01122f11B44bcfe662F788D2fcf59a5e21BA90a'
 PeepTaddress = "0x5D58398589de1a119117a5271EA8f75Db192fcD3";
 let peepT = web3.eth.contract(JSON.parse(PeepTABI)).at(PeepTaddress);
 
-function rehash() {
-  name = $("#your_name").val()
-  k256 = keccak256(name);
-  console.log(k256);
-}
-
 function buy() {
   correctNetwork();
   let d = new Date()
   let ds = d.toString();
  
   console.log(ds);
-  k256 = keccak256(ds);
+  let k256 = keccak256(ds);
   console.log(k256)
   let sig = web3.eth.sign(k256, dollPK);
   peepT.helperVisit(ds,sig, { value: ether, gas : 60000 }, function(error,result) {
         if (!error) {
-            $("#answer").val("OK");
+            $("#answer").val("Helper has been credited with this visit");
         }
     });
   }
@@ -218,11 +212,7 @@ function buy() {
                     <input class="form-control" name="account" id="account" width=50 readonly></input>
                 </div>
             </div>
-            <div class="col-md-3">
-                    
-                <label>balance</label>
-                <input class="form-control" name="balance" id="balance" width=20 readonly></input>
-            </div>
+            
         </div>
         <div class="row">
             <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm" alt="Metamask" style="display:none;">
@@ -236,7 +226,7 @@ function buy() {
 
         <div class="row">
             
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <label></label>
                 <button id="askButtonCode" class="btn btn-primary" type="button" onclick="javascript:buy();">TAP CARD
 
